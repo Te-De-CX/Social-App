@@ -1,18 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
 export default function Slider() {
   return (
-    <View style={styles.container}>
-      <Text>Hello World</Text>
-    </View>
+    <View>
+      <Text>Hi</Text>
+     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

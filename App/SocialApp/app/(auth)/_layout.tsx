@@ -1,30 +1,23 @@
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../types/navigation';
+import Slider from './slider';
+import Login from './login';
 
-SplashScreen.preventAutoHideAsync();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="slider" options={{ headerShown: false }} />
-    </Stack>
+    <Stack.Navigator initialRouteName="slider">
+      <Stack.Screen 
+        name="slider" 
+        component={Slider} 
+        options={{ headerShown: false }} 
+      />
+      <Stack.Screen 
+        name="login" 
+        component={Login} 
+        options={{ headerShown: false }} 
+      />
+    </Stack.Navigator>
   );
 }
