@@ -1,160 +1,162 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StatusBar, Animated, Dimensions, Platform } from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import { Link } from 'expo-router';
 import * as NavigationBar from 'expo-navigation-bar';
+import { Ionicons } from '@expo/vector-icons';
+
+const { width } = Dimensions.get('window');
 
 interface SlideItem {
   key: string;
   title: string;
   text: string;
   image: any;
-  backgroundColor: string;
 }
 
 const slides: SlideItem[] = [
   {
     key: '1',
-    title: 'Welcome to My App',
-    text: 'Discover amazing features in this app.',
-    image: require('../assets/images/icon.png'),
-    backgroundColor: '#F9A11B',
+    title: 'welcome to the fun magic media',
+    text: 'welcome to shi-chat one otf the best  chat apps in the world, wonnecting you to both old and new friends and family. Providing you with the best user experience.',
+    image: require('../assets/images/slider/img1.png'),
   },
   {
     key: '2',
-    title: 'Easy to Use',
-    text: 'Simple and intuitive interface.',
-    image: require('../assets/images/icon.png'),
-    backgroundColor: '#4CAF50',
+    title: 'creating beautiful memories',
+    text: 'welcome to shi-chat one otf the best  chat apps in the world, wonnecting you to both old and new friends and family. Providing you with the best user experience.',
+    image: require('../assets/images/slider/img2.png'),
   },
   {
     key: '3',
-    title: 'Get Started',
-    text: 'Ready to explore? Lets go!',
-    image: require('../assets/images/icon.png'),
-    backgroundColor: '#2196F3',
+    title: 'best social app to make new friends',
+    text: 'Discover new connections in a safe and friendly environment',
+    image: require('../assets/images/slider/img3.png'),
   },
 ];
 
 const Slider = () => {
-  // Hide system UI (Android + iOS)
+  const dotAnimations = slides.map(() => new Animated.Value(0));
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   useEffect(() => {
     StatusBar.setHidden(true);
-    NavigationBar.setVisibilityAsync("hidden");
+    
+    // Set navigation bar to be visible with 20% opacity
+    if (Platform.OS === 'android') {
+      NavigationBar.setVisibilityAsync("visible");
+      NavigationBar.setBackgroundColorAsync("#FFFFFF33"); // 20% opacity white (33 is hex for 20%)
+      NavigationBar.setButtonStyleAsync("dark");
+    }
     
     return () => {
       StatusBar.setHidden(false);
-      NavigationBar.setVisibilityAsync("visible");
+      if (Platform.OS === 'android') {
+        NavigationBar.setVisibilityAsync("visible");
+        NavigationBar.setBackgroundColorAsync("white"); // Reset to default
+        NavigationBar.setButtonStyleAsync("light");
+      }
     };
   }, []);
 
+  const animateDots = (currentIndex: number) => {
+    dotAnimations.forEach((anim, index) => {
+      Animated.spring(anim, {
+        toValue: index === currentIndex ? 1 : 0,
+        useNativeDriver: false,
+        bounciness: 6,
+        speed: 12,
+      }).start();
+    });
+  };
+
+  const onSlideChange = (index: number) => {
+    setCurrentIndex(index);
+    animateDots(index);
+  };
+
   const renderItem = ({ item }: { item: SlideItem }) => (
-    <View style={[styles.slide, { backgroundColor: item.backgroundColor }]}>
-      <Text style={styles.title}>{item.title}</Text>
+    <View className="flex-1 items-center justify-center bg-transparent">
       <Image 
         source={item.image} 
-        style={styles.image}
+        className="w-full h-1/2"
         resizeMode="contain"
       />
-      <Text style={styles.text}>{item.text}</Text>
+      <View className="mt-8 px-4">
+        <Text className="text-4xl capitalize px-5 font-bold text-black text-center mb-4">{item.title}</Text>
+        <Text className="capitalize text-base text-gray-600 text-start mt-3">{item.text}</Text>
+      </View>
     </View>
   );
 
   const renderNextButton = () => (
-    <View style={styles.button}>
-      <Text style={styles.buttonText}>Next</Text>
-    </View>
-  );
-
-  const renderDoneButton = () => (
-    <View style={styles.button}>
-      <Link href="/auth" asChild>
-        <TouchableOpacity>
-          <Text style={styles.buttonText}>Get Started</Text>
-        </TouchableOpacity>
-      </Link>
-    </View>
+    <TouchableOpacity className="px-6 py-3">
+      <Text className="text-primary font-bold text-base">Next</Text>
+    </TouchableOpacity>
   );
 
   const renderSkipButton = () => (
-    <View style={styles.skipButton}>
-      <Link href="/auth" asChild>
-        <TouchableOpacity>
-          <Text style={styles.skipButtonText}>Skip</Text>
-        </TouchableOpacity>
-      </Link>
-    </View>
+    <View /> // Empty view to hide the skip button
   );
+
+  const renderPagination = (activeIndex: number) => {
+    animateDots(activeIndex);
+    
+    return (
+      <View className="flex-row justify-center items-center mb-12">
+        {slides.map((_, index) => {
+          const scale = dotAnimations[index].interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, 1.5],
+          });
+          
+          const backgroundColor = dotAnimations[index].interpolate({
+            inputRange: [0, 1],
+            outputRange: ['rgba(0, 0, 0, 0.2)', '#01FFE1'],
+          });
+
+          return (
+            <Animated.View
+              key={`dot-${index}`}
+              className="rounded-full mx-1 mb-6"
+              style={{
+                width: 8,
+                height: 8,
+                backgroundColor,
+                transform: [{ scale }],
+              }}
+            />
+          );
+        })}
+      </View>
+    );
+  };
 
   return (
-    <AppIntroSlider
-      data={slides}
-      renderItem={renderItem}
-      renderDoneButton={renderDoneButton}
-      renderNextButton={renderNextButton}
-      renderSkipButton={renderSkipButton}
-      showSkipButton={true}
-      dotStyle={styles.dotStyle}
-      activeDotStyle={styles.activeDotStyle}
-    />
+    <View className="flex-1 bg-white">
+      {/* Arrow button that only shows on last slide */}
+      {currentIndex === slides.length - 1 && (
+        <Link href="/register" asChild>
+          <TouchableOpacity className="absolute top-10 right-5 z-50 p-2">
+            <Ionicons name="arrow-forward" size={24} color="black" />
+          </TouchableOpacity>
+        </Link>
+      )}
+      
+      <AppIntroSlider
+        data={slides}
+        renderItem={renderItem}
+        renderNextButton={renderNextButton}
+        renderSkipButton={renderSkipButton}
+        renderDoneButton={() => null} // Remove done button
+        renderPagination={renderPagination}
+        showSkipButton={false} // Hide skip button
+        activeDotStyle={{ display: 'none' }}
+        dotStyle={{ display: 'none' }}
+        onSlideChange={onSlideChange}
+      />
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  slide: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  text: {
-    fontSize: 16,
-    color: 'white',
-    textAlign: 'center',
-    paddingHorizontal: 30,
-    marginBottom: 20,
-  },
-  image: {
-    width: '80%',
-    height: 200,
-    marginVertical: 30,
-    maxWidth: 300,
-  },
-  button: {
-    backgroundColor: 'white',
-    padding: 10,
-    borderRadius: 25,
-    paddingHorizontal: 25,
-  },
-  buttonText: {
-    color: '#F9A11B',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  skipButton: {
-    padding: 10,
-  },
-  skipButtonText: {
-    color: 'white',
-    fontWeight: '600',
-  },
-  dotStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    width: 8,
-    height: 8,
-  },
-  activeDotStyle: {
-    backgroundColor: 'white',
-    width: 10,
-    height: 10,
-  },
-});
 
 export default Slider;
