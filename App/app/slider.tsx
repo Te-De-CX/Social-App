@@ -118,7 +118,7 @@ const Slider = () => {
           return (
             <Animated.View
               key={`dot-${index}`}
-              className="rounded-full mx-1 mb-6"
+              className="rounded-full mx-1"
               style={{
                 width: 8,
                 height: 8,
@@ -136,7 +136,7 @@ const Slider = () => {
     <View className="flex-1 bg-white">
       {/* Arrow button that only shows on last slide */}
       {currentIndex === slides.length - 1 && (
-        <Link href="/register" asChild>
+        <Link href="/(auth)/register" asChild>
           <TouchableOpacity className="absolute top-10 right-5 z-50 p-2">
             <Ionicons name="arrow-forward" size={24} color="black" />
           </TouchableOpacity>
