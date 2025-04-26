@@ -42,7 +42,6 @@ const Slider = () => {
   useEffect(() => {
     StatusBar.setHidden(true);
     
-    // Set navigation bar to be visible with 20% opacity
     if (Platform.OS === 'android') {
       NavigationBar.setVisibilityAsync("visible");
       NavigationBar.setBackgroundColorAsync("#FFFFFF33"); // 20% opacity white (33 is hex for 20%)
@@ -50,10 +49,10 @@ const Slider = () => {
     }
     
     return () => {
-      StatusBar.setHidden(false);
+      StatusBar.setHidden(true);
       if (Platform.OS === 'android') {
         NavigationBar.setVisibilityAsync("visible");
-        NavigationBar.setBackgroundColorAsync("white"); // Reset to default
+        NavigationBar.setBackgroundColorAsync("white"); 
         NavigationBar.setButtonStyleAsync("light");
       }
     };

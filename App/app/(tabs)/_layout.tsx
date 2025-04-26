@@ -13,14 +13,15 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const bounceValue = new Animated.Value(0);
 
-useEffect(() => {
-  return () => {
+  useEffect(() => {
     StatusBar.setHidden(false);
+    StatusBar.setBarStyle('dark-content');
+    
     if (Platform.OS === 'android') {
       NavigationBar.setBackgroundColorAsync("white");
+      NavigationBar.setButtonStyleAsync("dark");
     }
-  };
-}, []);
+  }, []);
 
   const animateTab = () => {
     Animated.sequence([
